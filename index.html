@@ -1,953 +1,745 @@
-
 <!DOCTYPE html>
-<html lang="pt-PT">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atualização One UI 8.5</title>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <title>MarlyOS Pro</title>
+    
+    <!-- Injeta o Tailwind CSS direto -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Estilos Customizados e Motor de Animação One UI 7 -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
-        :root {
-            --bg-color-1: #0f0f11;
-            --bg-color-2: #1a1a24;
-            --bg-gradient: linear-gradient(135deg, var(--bg-color-1) 0%, var(--bg-color-2) 100%);
-            
-            --text-main: #f3f4f6;
-            --text-muted: #9ca3af;
-            --green: #22c55e;
-            --yellow: #eab308;
-            --red: #ef4444;
-            --glass-bg: rgba(26, 26, 30, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            --apple-bg: rgba(40, 40, 41, 0.75);
-            --apple-active-bg: #3a3a3c;
-            --apple-inactive-text: #8e8e93;
+        #desktop {
+            background-image: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+        .app-container {
+            position: absolute;
+            inset: 0;
+            background-color: #0a0a0a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding-top: 3rem;
         }
 
-        html, body {
-            background-color: var(--bg-color-1);
-            transition: background-color 1.5s ease;
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background-color: #111111;
+            border-bottom: 1px solid rgba(39, 39, 42, 0.6);
+            font-size: 0.875rem;
+            color: #d4d4d8;
         }
 
-        body {
-            color: var(--text-main);
-            padding-bottom: 140px;
-            -webkit-font-smoothing: antialiased;
-            min-height: 100vh;
+        .app-icon-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.375rem;
+            cursor: pointer;
+            width: 100%;
+            max-width: 72px;
+            transition: transform 150ms;
+            z-index: 20;
+        }
+        .app-icon-wrapper:active {
+            transform: scale(0.92);
         }
 
-        /* FUNDO DO SITE COM A ANIMAÇÃO LENTA (SLOW) */
-        .site-background {
-            position: fixed; inset: 0; z-index: -2;
-            background: var(--bg-gradient); 
-            transition: background 1.5s ease, opacity 1.5s ease;
+        .app-icon-wrapper img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border-radius: 22px;
+            background-color: rgba(24, 24, 27, 0.4);
+            padding: 0.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* O FADE-OUT PRETO FIXO NO TOPO */
-        .top-gradient-dark {
-            position: fixed; top: 0; left: 0; width: 100%; height: 160px;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.6) 35%, transparent 100%);
-            z-index: 95; pointer-events: none;
+        .app-text {
+            font-size: 11px;
+            text-align: center;
+            color: #e4e4e7;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            width: 100%;
         }
 
-        /* CAMADA DE DESFOQUE GLOBAL QUANDO A PESQUISA ESTÁ ABERTA */
-        .search-overlay {
-            position: fixed; inset: 0; z-index: 88;
-            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-            opacity: 0; pointer-events: none; transition: opacity 0.5s ease;
-        }
-        body.search-mode .search-overlay { opacity: 1; pointer-events: auto; }
-        body.search-mode main { position: relative; z-index: 89; }
-
-        .gradient-blur { position: fixed; z-index: 90; inset: 0 0 auto 0; height: 130px; pointer-events: none; }
-        .gradient-blur > div, .gradient-blur::before, .gradient-blur::after { position: absolute; inset: 0; }
-        .gradient-blur::before { z-index: 1; backdrop-filter: blur(0.5px); -webkit-backdrop-filter: blur(0.5px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, black 12.5%, black 25%, rgba(0, 0, 0, 0) 37.5%); -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0) 0%, black 12.5%, black 25%, rgba(0, 0, 0, 0) 37.5%); }
-        .gradient-blur > div:nth-of-type(1) { z-index: 2; backdrop-filter: blur(1px); -webkit-backdrop-filter: blur(1px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 12.5%, black 25%, black 37.5%, rgba(0, 0, 0, 0) 50%); -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0) 12.5%, black 25%, black 37.5%, rgba(0, 0, 0, 0) 50%); }
-        .gradient-blur > div:nth-of-type(2) { z-index: 3; backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 25%, black 37.5%, black 50%, rgba(0, 0, 0, 0) 62.5%); -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0) 25%, black 37.5%, black 50%, rgba(0, 0, 0, 0) 62.5%); }
-        .gradient-blur > div:nth-of-type(3) { z-index: 4; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 37.5%, black 50%, black 62.5%, rgba(0, 0, 0, 0) 75%); -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0) 37.5%, black 50%, black 62.5%, rgba(0, 0, 0, 0) 75%); }
-        .gradient-blur > div:nth-of-type(4) { z-index: 5; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 50%, black 62.5%, black 75%, rgba(0, 0, 0, 0) 87.5%); -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0) 50%, black 62.5%, black 75%, rgba(0, 0, 0, 0) 87.5%); }
-        .gradient-blur > div:nth-of-type(5) { z-index: 6; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 62.5%, black 75%, black 87.5%, rgba(0, 0, 0, 0) 100%); -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0) 62.5%, black 75%, black 87.5%, rgba(0, 0, 0, 0) 100%); }
-        .gradient-blur > div:nth-of-type(6) { z-index: 7; backdrop-filter: blur(32px); -webkit-backdrop-filter: blur(32px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 75%, black 87.5%, black 100%); -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0) 75%, black 87.5%, black 100%); }
-        .gradient-blur::after { z-index: 8; backdrop-filter: blur(64px); -webkit-backdrop-filter: blur(64px); mask: linear-gradient(to top, rgba(0, 0, 0, 0) 87.5%, black 100%); -webkit-mask: linear-gradient(to top, rgba(0, 0, 0, 0) 87.5%, black 100%); }
-
-        header { max-width: 900px; margin: 0 auto; padding: 110px 20px 20px; text-align: left; position: relative; z-index: 85; transition: opacity 0.3s; }
-        h1 { font-size: 2.2rem; margin-bottom: 25px; font-weight: 700; color: #ffffff; text-shadow: 0 0 15px rgba(255, 255, 255, 0.4); }
-
-        .legend { display: flex; flex-direction: column; gap: 15px; width: fit-content; margin-bottom: 20px; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); padding: 20px 30px; border-radius: 16px; box-shadow: var(--glass-shadow); transition: all 0.3s; }
-        .legend-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; font-weight: 600; color: var(--text-main); }
-        .dot { width: 14px; height: 14px; border-radius: 50%; display: inline-block; }
-        .dot.green { background-color: var(--green); box-shadow: 0 0 10px var(--green); }
-        .dot.yellow { background-color: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
-        .dot.red { background-color: var(--red); box-shadow: 0 0 10px var(--red); }
-        .dot.black {
-    background-color: #000000;
-    box-shadow: 0 0 10px #000000;
-    border: 1px solid rgba(255,255,255,0.2);
-}
-
-        .status-badges { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; flex-wrap: wrap; }
-        .badge { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-main); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: all 0.3s;}
-        .badge-live { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #4ade80; }
-        .pulse-dot { width: 10px; height: 10px; background-color: var(--green); border-radius: 50%; display: inline-block; box-shadow: 0 0 8px var(--green); animation: pulse-animation 2s infinite; }
-        @keyframes pulse-animation { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
-
-        .telegram-pill { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(36, 161, 222, 0.15); border: 1px solid rgba(36, 161, 222, 0.4); border-radius: 50px; font-size: 0.85rem; font-weight: 600; color: #38bdf8; text-decoration: none; z-index: 1; transition: all 0.3s ease; }
-        .telegram-pill::before { content: ''; position: absolute; inset: -1px; border-radius: 50px; background: linear-gradient(90deg, #3b82f6, #0ea5e9, #a855f7, #3b82f6); background-size: 300% 100%; filter: blur(8px); opacity: 0.6; z-index: -1; animation: telegram-glow 4s linear infinite; pointer-events: none; }
-        .telegram-pill:hover { transform: translateY(-2px); background: rgba(36, 161, 222, 0.25); }
-        .telegram-pill:hover::before { opacity: 1; filter: blur(10px); }
-        @keyframes telegram-glow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        .header-meta-row { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; gap: 15px; flex-wrap: wrap; }
-        .subtitle { color: var(--text-muted); font-size: 0.85rem; line-height: 1.5; }
-
-        .filter-wrapper { position: relative; margin-left: auto; }
-        .filter-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; cursor: pointer; user-select: none; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50px; font-size: 0.85rem; font-weight: 600; color: var(--text-main); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1); }
-        .filter-pill:all { outline: none; }
-        .filter-pill:hover, .filter-pill.menu-open { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2); }
-        .filter-pill svg { width: 16px; height: 16px; color: var(--text-muted); transition: transform 0.2s ease; }
-        .filter-pill.menu-open svg { transform: rotate(180deg); }
-
-        .filter-popup { position: absolute; top: calc(100% + 8px); right: 0; min-width: 170px; padding: 6px; z-index: 110; background: rgba(30, 30, 35, 0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); opacity: 0; transform: scale(0.9) translateY(-10px); pointer-events: none; transform-origin: top right; transition: opacity 0.25s cubic-bezier(0.25, 1, 0.5, 1), transform 0.25s cubic-bezier(0.25, 1, 0.5, 1); }
-        .filter-popup.show { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
-        .popup-item { padding: 10px 14px; font-size: 0.9rem; font-weight: 500; color: var(--text-main); border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: all 0.15s; }
-        .popup-item:hover { background: rgba(255, 255, 255, 0.08); }
-        .popup-item.active { background: rgba(255, 255, 255, 0.12); font-weight: 600; }
-
-        /* GRID PRINCIPAL DOS APARELHOS */
-        main { max-width: 900px; margin: 0 auto; padding: 0 20px 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 30px; }
-
-        /* =========================================
-           O NOVO MODO DE PESQUISA (SPOTLIGHT)
-           Aqui é onde a mágica acontece. Ele centraliza
-           os resultados na área vazia da tela!
-           ========================================= */
-        body.search-mode header { display: none !important; }
-        body.search-mode main {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            padding-top: 100px !important; /* Joga os cards pra área que você circulou */
-            padding-bottom: 250px !important;
-            min-height: 100vh;
-        }
-        body.search-mode .card-wrapper {
-            width: 100% !important;
-            max-width: 450px !important;
+        .gesture-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-bottom: 1.25rem;
+            background-image: linear-gradient(to top, #000 40%, rgba(0,0,0,0.8), transparent);
+            cursor: pointer;
+            z-index: 9999 !important;
         }
 
-        .card-wrapper { position: relative; display: flex; flex-direction: column; height: 100%; cursor: pointer; transition: transform 0.2s; }
-        .card-wrapper:active { transform: scale(0.98); }
-        
-        /* GLOW DOS CARDS COM ANIMAÇÃO ENTRANDO (ELÁSTICO) */
-        .card-glow { 
-            position: absolute; top: 50%; left: 50%; width: 105%; height: 105%;
-            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%); 
-            filter: blur(20px); border-radius: 16px; z-index: 0; opacity: 0; 
-            transform: translate(-50%, -50%) scale(0.7); 
-            transition: opacity 0.3s ease, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        .gesture-line {
+            width: 7.5rem;
+            height: 5px;
+            background-color: rgba(255, 255, 255, 0.55);
+            border-radius: 9999px;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .gesture-bar:active .gesture-line {
+            background-color: #ffffff;
+            transform: scaleX(1.15);
+        }
+
+        /* MOTOR DE ANIMAÇÃO ONE UI 7 */
+        .oxygen-animate {
+            transition: transform 0.4s cubic-bezier(0.34, 1.25, 0.64, 1), 
+                        opacity 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+                        border-radius 0.4s cubic-bezier(0.34, 1.25, 0.64, 1);
+            will-change: transform, opacity;
+            transform-origin: var(--click-x, 50%) var(--click-y, 50%);
+        }
+
+        .window-closed {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none !important;
+            z-index: 0;
+            border-radius: 40px;
+            transform: scale(0.01);
+        }
+
+        .window-open {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto !important;
+            z-index: 50;
+            border-radius: 0px;
+            transform: scale(1);
+        }
+
+        /* Efeito de click nos botões de menu das configurações */
+        .setting-btn {
+            transition: background-color 0.15s ease, transform 0.1s ease;
+        }
+        .setting-btn:active {
+            background-color: rgba(63, 63, 70, 0.4);
+            transform: scale(0.98);
+        }
+
+        /* Telas internas das configurações */
+        .settings-subpage {
+            position: absolute;
+            inset: 0;
+            background-color: #0a0a0a;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+        }
+        .subpage-hidden {
+            transform: translateX(100%);
+            opacity: 0;
             pointer-events: none;
         }
-        .card-wrapper.active-glow .card-glow { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        .card-wrapper#favorites-card .card-glow { background: radial-gradient(circle, rgba(234, 179, 8, 0.2) 0%, transparent 70%); }
-
-        .category { background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; position: relative; z-index: 1; height: 100%; transition: all 0.3s; }
-        .card-wrapper.active-glow .category { border-color: rgba(255,255,255,0.25); }
-        .category h2 { font-size: 1.1rem; color: #ffffff; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); pointer-events: none; display: flex; align-items: center; gap: 8px;}
-        
-        .device { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; font-size: 0.95rem; font-weight: 600; pointer-events: none; }
-        .device:not(:last-child) { border-bottom: 1px dashed rgba(255,255,255,0.05); }
-        .device-group { display: flex; align-items: center; gap: 10px; }
-
-        .date-pill { font-size: 0.7rem; padding: 3px 8px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
-        .date-pill.scheduled { color: #60a5fa; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); }
-        .date-pill.distributing { color: #eab308; background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.2); }
-        .date-pill.tbd { color: var(--text-muted); background: rgba(255, 255, 255, 0.05); }
-        .date-pill.available { color: #4ade80; background: rgba(34, 197, 94, 0.1); }
-
-        /* SISTEMA DE FAVORITOS E ANIMAÇÃO DO CORAÇÃO */
-        @keyframes popFavCard { 0% { opacity: 0; transform: translateY(-20px) scale(0.95); } 60% { opacity: 1; transform: translateY(5px) scale(1.02); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-        .animate-fav-card { animation: popFavCard 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        
-        /* ANIMAÇÃO DOS CARDS NO MODO DE BUSCA */
-        @keyframes popResult { 0% { opacity: 0; transform: translateY(20px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
-        body.search-mode .card-wrapper.match { animation: popResult 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-        .device-actions { display: flex; align-items: center; gap: 12px; pointer-events: auto; }
-        .fav-btn { background: transparent; border: none; cursor: pointer; padding: 4px; margin: -4px; color: rgba(255, 255, 255, 0.2); display: flex; align-items: center; justify-content: center; transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.2s; outline: none; -webkit-tap-highlight-color: transparent; }
-        .fav-btn:hover { transform: scale(1.1); color: rgba(255, 255, 255, 0.5); }
-        .fav-btn:active { transform: scale(0.9); }
-        .fav-btn.active { color: #ef4444; }
-        .fav-btn.active svg { fill: #ef4444; stroke: #ef4444; animation: heartPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.4); } 100% { transform: scale(1); } }
-
-        /* =========================================
-           NAVEGAÇÃO INFERIOR E SISTEMA DE ESTILOS
-           ========================================= */
-        .apple-pill-nav { 
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-            display: inline-flex; padding: 5px; border-radius: 40px; z-index: 100; 
-            background: var(--apple-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); 
-            border: 1px solid rgba(255, 255, 255, 0.06); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); 
-            /* Transição elástica de toda a barra de navegação */
-            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1); 
+        .subpage-visible {
+            transform: translateX(0);
+            opacity: 1;
+            pointer-events: auto;
         }
-        .apple-nav-item { 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; 
-            width: 80px; height: 60px; border-radius: 32px; color: var(--apple-inactive-text); cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); -webkit-tap-highlight-color: transparent; user-select: none; 
+
+        .dial-btn, .calc-btn {
+            width: 3.5rem;
+            height: 3.5rem;
+            background-color: #18181b;
+            color: #e4e4e7;
+            border-radius: 9999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 500;
         }
-        .apple-nav-item.active { background: var(--apple-active-bg); color: #ffffff; }
-        .apple-nav-item svg { width: 22px; height: 22px; transition: transform 0.2s; }
-        .apple-nav-item:active svg { transform: scale(0.9); }
-        .apple-nav-item span { font-size: 0.75rem; font-weight: 500; letter-spacing: 0.3px; }
-
-        /* Estilo da Barra de Tarefas (Opaca com Blur) - IGUALZINHA A PÍLULA */
-        body.nav-taskbar .apple-pill-nav {
-            bottom: 0; left: 0; width: 100%; transform: translateX(0);
-            border-radius: 0; border: none; border-top: 1px solid rgba(255, 255, 255, 0.08);
-            background: var(--apple-bg); /* Exatamente a mesma cor */
-            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); /* Exatamente o mesmo blur */
-            justify-content: space-evenly;
-            padding: 5px 0 calc(5px + env(safe-area-inset-bottom));
-            box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.4);
-        }
-        body.nav-taskbar .apple-nav-item { border-radius: 12px; height: 55px; }
-
-        /* =========================================
-           BARRA DE PESQUISA COM GLOW BRANCO SUAVE
-           ========================================= */
-        .ios-search-bar { 
-            position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%) translateY(20px); 
-            width: calc(100% - 40px); max-width: 400px; padding: 14px 20px; display: flex; align-items: center; z-index: 102; 
-            background: rgba(44, 44, 46, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            opacity: 0; pointer-events: none; transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1); 
-        }
-        .ios-search-bar.active { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
-        
-        /* Glow Branco Suave aparecendo ao clicar na barra */
-        .ios-search-bar:focus-within { 
-            border-color: rgba(255, 255, 255, 0.7); 
-            box-shadow: 0 0 25px rgba(255, 255, 255, 0.25), 0 10px 40px rgba(0,0,0,0.6); 
-            transform: translateX(-50%) translateY(-10px); /* Dá uma leve levantadinha */
-        }
-        .ios-search-bar svg { color: var(--apple-inactive-text); width: 20px; height: 20px; transition: color 0.4s;}
-        .ios-search-bar:focus-within svg { color: #ffffff; } 
-        .ios-search-bar input { flex: 1; background: transparent; border: none; color: white; font-size: 1rem; outline: none; margin-left: 12px; }
-        .ios-search-bar input::placeholder { color: var(--apple-inactive-text); }
-
-        /* NOTIFICAÇÃO FLUTUANTE ESTILO MOBILE NATIVO */
-        .install-prompt {
-            position: fixed; top: 15px; left: 50%; transform: translateX(-50%) translateY(-150%);
-            width: calc(100% - 24px); max-width: 420px; background: rgba(30, 30, 32, 0.85);
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px; padding: 12px 16px; display: flex; align-items: center; gap: 14px;
-            z-index: 1000; box-shadow: 0 15px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-            opacity: 0; pointer-events: none; transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.4s ease;
-        }
-        .install-prompt.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
-        .install-icon { width: 42px; height: 42px; background: linear-gradient(135deg, #3b82f6, #a855f7); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
-        .install-icon svg { width: 22px; height: 22px; }
-        .install-text { flex: 1; }
-        .install-text h4 { font-size: 0.95rem; color: #fff; font-weight: 600; margin-bottom: 2px; }
-        .install-text p { font-size: 0.8rem; color: #a1a1aa; line-height: 1.3; margin: 0; }
-        .install-actions { display: flex; align-items: center; gap: 12px; }
-        .install-btn { background: rgba(255, 255, 255, 0.1); border: none; color: #fff; font-weight: 600; font-size: 0.85rem; padding: 6px 14px; border-radius: 50px; cursor: pointer; transition: 0.2s; }
-        .install-btn:active { transform: scale(0.95); background: rgba(255, 255, 255, 0.15); }
-        .install-close { background: transparent; border: none; padding: 0; color: #6b7280; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
-        .install-close:active { transform: scale(0.9); color: #fff; }
-
-        /* TELA DE AJUSTES E CONFIGS ADICIONAIS */
-        .ajustes-view { display: none; padding: 80px 20px 140px; animation: fadeIn 0.4s ease; max-width: 600px; margin: 0 auto; }
-        .ajustes-header { text-align: center; margin-bottom: 40px; }
-        .ajustes-header svg { color: #8e8e93; margin-bottom: 15px; }
-        .ajustes-header h2 { font-size: 1.8rem; color: #ffffff; font-weight: 700; }
-        .settings-container { background: rgba(26, 26, 30, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); border-radius: 16px; padding: 10px 20px; box-shadow: var(--glass-shadow); transition: all 0.3s;}
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .setting-item:last-child { border-bottom: none; }
-        .setting-item.column { flex-direction: column; align-items: flex-start; gap: 15px; width: 100%; }
-        .setting-info { display: flex; flex-direction: column; gap: 6px; padding-right: 15px; }
-        .setting-info label { font-weight: 600; color: #ffffff; font-size: 1rem; }
-        .setting-info span { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
-        
-        /* CORES ATUALIZADAS E ANIMADAS */
-        .color-options { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px; text-align: center; justify-content: flex-start; }
-        .color-option-wrapper { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 45px; }
-        .color-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 500; }
-        .color-dot { width: 36px; height: 36px; border-radius: 50%; background-color: var(--dot-color); cursor: pointer; border: 2px solid rgba(255,255,255,0.1); transition: transform 0.2s, border-color 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .color-dot:hover { transform: scale(1.1); }
-        .color-dot.active { border-color: #ffffff; transform: scale(1.15); box-shadow: 0 0 15px var(--dot-color); }
-        
-        /* PRÉ-VISUALIZAÇÃO EM DESENHO (CELULARES) */
-        .nav-mockups-container { display: flex; justify-content: center; gap: 30px; width: 100%; margin-top: 10px; }
-        .mockup-item { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; }
-        
-        .mockup-phone { 
-            width: 80px; height: 140px; 
-            border: 3px solid rgba(255, 255, 255, 0.15); 
-            border-radius: 18px; position: relative; 
-            background: rgba(0, 0, 0, 0.2); transition: all 0.3s ease;
-            display: flex; align-items: flex-end; justify-content: center; overflow: hidden;
-        }
-        .mockup-item:hover .mockup-phone { border-color: rgba(255, 255, 255, 0.3); }
-        .mockup-item.active .mockup-phone { border-color: #3b82f6; background: rgba(59, 130, 246, 0.05); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2); }
-        
-        .m-pill { width: 45px; height: 14px; background: rgba(255, 255, 255, 0.2); border-radius: 20px; margin-bottom: 12px; transition: 0.3s; }
-        .m-taskbar { width: 100%; height: 22px; background: rgba(255, 255, 255, 0.2); transition: 0.3s; border-radius: 0 0 10px 10px; }
-        
-        .mockup-item.active .m-pill, .mockup-item.active .m-taskbar { background: #3b82f6; }
-        
-        .mockup-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); transition: 0.3s; }
-        .mockup-item.active .mockup-label { color: #fff; }
-
-        /* OUTROS BOTÕES E SWITCHES */
-        .action-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 8px 16px; border-radius: 10px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .action-btn:hover { background: rgba(255,255,255,0.15); }
-        .action-btn:active { transform: scale(0.95); }
-        .action-btn.red-btn { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #ef4444; margin-top: 10px; width: 100%; padding: 12px; font-size: 0.95rem; display: flex; align-items: center; justify-content: center;}
-        
-        .toggle-switch { position: relative; display: inline-block; width: 52px; height: 30px; flex-shrink: 0; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.15); transition: .3s; border-radius: 34px; border: 1px solid rgba(255,255,255,0.05); }
-        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 3px; bottom: 3px; background-color: white; transition: .3s cubic-bezier(0.25, 1, 0.5, 1); border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        input:checked + .slider { background-color: #3b82f6; border-color: #3b82f6; }
-        input:checked + .slider:before { transform: translateX(22px); }
-
-        /* NOVAS CONFIGURAÇÕES (Classes) */
-        body.solid-cards .category { background: #1c1c1e; backdrop-filter: none; -webkit-backdrop-filter: none; border-color: #2c2c2e; box-shadow: 0 5px 15px rgba(0,0,0,0.4);}
-        body.solid-cards .settings-container { background: #1c1c1e; backdrop-filter: none; -webkit-backdrop-filter: none; border-color: #2c2c2e; }
-        body.solid-cards .legend { background: #1c1c1e; backdrop-filter: none; border-color: #2c2c2e; }
-
-        body.no-blur .gradient-blur { display: none; }
-        body.no-blur .search-overlay { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background: rgba(0,0,0,0.85) !important; }
-        body.no-blur .legend, body.no-blur .category, body.no-blur .settings-container, body.no-blur .ios-search-bar, body.no-blur .filter-popup { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: #1a1a20 !important; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border-color: transparent;}
-        body.no-blur .apple-pill-nav { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; background-color: #222225 !important; }
-        body.no-blur .badge, body.no-blur .filter-pill, body.no-blur .reset-btn { backdrop-filter: none !important; background-color: #2c2c31 !important; border-color: transparent !important; }
-        
-        .no-results { text-align: center; grid-column: 1 / -1; padding: 40px; color: var(--text-muted); display: none; font-size: 1.1rem; background: var(--glass-bg); backdrop-filter: blur(20px); border-radius: 16px; border: 1px solid var(--glass-border); }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .dial-btn:active, .calc-btn:active { background-color: #27272a; }
+        .calc-btn { border-radius: 1rem; }
     </style>
 </head>
-<body>
+<body class="bg-[#050505] text-white h-screen w-screen overflow-hidden font-sans select-none flex justify-center items-center">
 
-    <!-- DUAS CAMADAS DE FUNDO PARA O CROSSFADE LENTO DO TEMA (1.5s) -->
-    <div id="bg-layer-1" class="site-background active"></div>
-    <div id="bg-layer-2" class="site-background"></div>
+    <!-- Container do Smartphone -->
+    <div class="relative w-full h-full md:max-w-[412px] md:h-[892px] md:rounded-[52px] md:border-[14px] md:border-zinc-800 bg-black overflow-hidden shadow-2xl flex flex-col justify-between">
 
-    <!-- CAMADA DE DESFOQUE QUANDO A PESQUISA ABRE -->
-    <div id="search-overlay" class="search-overlay"></div>
-
-    <!-- NOTIFICAÇÃO FLUTUANTE ESTILO MOBILE NATIVO -->
-    <div class="install-prompt" id="install-prompt">
-        <div class="install-icon">
-            <i data-lucide="download-cloud"></i>
-        </div>
-        <div class="install-text">
-            <h4>Instalar App</h4>
-            <p>Adicione nosso site à tela inicial para acesso rápido.</p>
-        </div>
-        <div class="install-actions">
-            <button class="install-btn" id="install-btn-add">Adicionar</button>
-            <button class="install-close" id="install-btn-close"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
-        </div>
-    </div>
-
-    <!-- O FADE-OUT PRETO DO TOPO -->
-    <div class="top-gradient-dark"></div>
-    <div class="gradient-blur">
-        <div></div><div></div><div></div><div></div><div></div><div></div>
-    </div>
-
-    <div id="main-content">
-        <header>
-            <h1>Distribuição da One UI 8.5</h1>
-
-            <div class="legend">
-                <div class="legend-item"><span class="dot green"></span> Já Recebeu Global</div>
-                <div class="legend-item"><span class="dot yellow"></span> Em Distribuição</div>
-                <div class="legend-item"><span class="dot red"></span> Ainda Não Recebeu</div>
-<div class="legend-item">
-    <span class="dot black"></span>
-    Nem pensar
-</div>
-            </div>
-
-            <div class="status-badges">
-                <div class="badge">Atualizado: 18 de junho</div>
-                <div class="badge badge-live">
-                    <span class="pulse-dot"></span> Ao vivo
-                </div>
-                
-                <a href="https://t.me/entrar_techthings" target="_blank" class="telegram-pill">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l-1.442 4.195c.205.34.604.304.81.109l2.254-2.189 4.697 3.465c.865.478 1.487.23 1.704-.79l3.082-14.51c.32-1.298-.485-1.89-1.281-1.247z"/>
-                    </svg>
-                    fusion tech
-                </a>
-            </div>
-
-            <div class="header-meta-row">
-                <p class="subtitle">Fonte: Samsung Apks New | baseado no site do luhyzi</p>
-                
-                <div class="filter-wrapper">
-                    <button class="filter-pill" id="filter-btn">
-                        <i data-lucide="filter"></i>
-                        <span id="filter-label">Filtro</span>
-                    </button>
-                    
-                    <div class="filter-popup" id="filter-popup">
-                        <div class="popup-item active" data-value="todos">Todos</div>
-                        <div class="popup-item" data-value="atualizado">Atualizado</div>
-                        <div class="popup-item" data-value="distribuicao">Distribuição</div>
-                        <div class="popup-item" data-value="nao-recebeu">Não recebeu</div>
-                    </div>
+        <!-- TELA DE SETUP (BOAS-VINDAS) -->
+        <div id="setup-screen" class="absolute inset-0 bg-gradient-to-br from-zinc-950 via-zinc-900 to-black flex flex-col items-center justify-between z-[100] transition-opacity duration-500 p-8 pt-24 pb-12">
+            <div id="step-language" class="flex flex-col items-center gap-6 w-full">
+                <h1 class="text-4xl font-light tracking-wide animate-pulse text-center text-zinc-100">Welcome to MarlyOS</h1>
+                <p class="text-zinc-400 text-sm">Selecione seu idioma</p>
+                <div class="grid grid-cols-1 gap-3 mt-6 w-full max-w-xs">
+                    <button onclick="nextStep('pt-BR')" class="bg-zinc-900/80 hover:bg-zinc-800 px-6 py-3.5 rounded-2xl border border-white/5 transition-all text-sm font-medium">Português (BR)</button>
                 </div>
             </div>
-        </header>
-
-        <main id="device-container">
-            <!-- CARD DE FAVORITOS -->
-            <div class="card-wrapper" id="favorites-card" style="display: none; grid-column: 1 / -1;">
-                <div class="card-glow"></div>
-                <div class="category">
-                    <h2><i data-lucide="star" style="color: #eab308; fill: #eab308; width: 20px; height: 20px;"></i> Dispositivos Favoritos</h2>
-                    <div id="favorites-list"></div>
-                </div>
-            </div>
-
-            <!-- LINHAS -->
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha S25</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S25</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S25+</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S25 Ultra</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S25 FE</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S25 Edge</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha S24</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S24</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S24+</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S24 Ultra</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S24 FE</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha S23</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S23</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S23+</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S23 Ultra</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">S23 FE</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha S22</h2>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">S22</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">S22+</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">S22 Ultra</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha S21</h2>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">S21 FE</span><span class="date-pill scheduled">Junho</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha A7x</h2>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">A73</span><span class="date-pill scheduled">Junho</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha A5x</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A56</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A55</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A54</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">A53</span><span class="date-pill scheduled">Junho</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha A3x</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A36</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A35</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A34</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">A33</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha A2x</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A26</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A25</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">A24 5G</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-                <div class="device" data-status="nao-recebeu"><div class="device-group"><span class="name">A24 LTE</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot red"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha A1x</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A17 5G</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A17 LTE</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A16 5G</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">A16 LTE</span><span class="date-pill scheduled">31 de maio a junho</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A15 5G</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">A15 LTE</span><span class="date-pill distributing">Em distribuição</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-                                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">A14 5G</span><span class="date-pill tbd">nem receberá</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot black"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha A0x</h2>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">A07 5G</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">A07 LTE</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">A06 5G</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">A06 LTE</span><span class="date-pill tbd">Sem previsão</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha M5x</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">M56</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">M55s</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">M55</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">M54</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">M53</span><span class="date-pill distributing">Em distribuição</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha M3x</h2>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">M36</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">M35</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="atualizado"><div class="device-group"><span class="name">M34</span><span class="date-pill available">Atualizado</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha M1x</h2>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">M17</span><span class="date-pill distributing">Em distribuição</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">M16</span><span class="date-pill distributing">Em distribuição</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">M15</span><span class="date-pill distributing">Em distribuição</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-            </div></div>
-
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha M0x</h2>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">M07</span><span class="date-pill distributing">Em distribuição</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">M06</span><span class="date-pill distributing">Em distribuição</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot yellow"></span></div></div>
-            </div></div>
-            
-            <div class="card-wrapper"><div class="card-glow"></div><div class="category"><h2>Linha Z fold</h2>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">z fold 7</span><span class="date-pill available">recebeu</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">z fold 6</span><span class="date-pill available">recebeu!</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">z fold 5</span><span class="date-pill available">recebeu!</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-                 <div class="device" data-status="distribuicao"><div class="device-group"><span class="name">z fold 4</span><span class="date-pill distributing">sem previsão.</span></div><div class="device-actions"><button class="fav-btn" title="Favoritar"><i data-lucide="heart"></i></button><span class="dot green"></span></div></div>
-            </div></div>
-
-            <div class="no-results" id="no-results">
-                Nenhum dispositivo encontrado.
-            </div>
-        </main>
-    </div>
-
-    <!-- TELA DE AJUSTES -->
-    <div class="ajustes-view" id="ajustes-view">
-        <div class="ajustes-header">
-            <i data-lucide="settings" style="width: 50px; height: 50px;"></i>
-            <h2>Ajustes</h2>
-        </div>
-
-        <div class="settings-container">
-            <div class="setting-item column">
-                <div class="setting-info" style="width: 100%;">
-                    <label>Tema de Fundo</label>
-                    <span>Transição lenta de cores. O Modo OLED traz máxima economia de bateria.</span>
-                </div>
-                
-                <div class="color-options">
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #1a1a24" data-theme="default"></div><span class="color-label">Padrão</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #000000" data-theme="oled"></div><span class="color-label">OLED</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #020617" data-theme="midnight"></div><span class="color-label">Noite</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #0b132b" data-theme="darkblue"></div><span class="color-label">Azul</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #061a14" data-theme="darkgreen"></div><span class="color-label">Verde</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #1a0b2e" data-theme="darkpurple"></div><span class="color-label">Roxo</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #2b0c0c" data-theme="darkred"></div><span class="color-label">Rubi</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #4a1528" data-theme="darkpink"></div><span class="color-label">Vinho</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #2b200b" data-theme="darkgold"></div><span class="color-label">Ouro</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #331400" data-theme="darkorange"></div><span class="color-label">Bronze</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #062329" data-theme="darkteal"></div><span class="color-label">Oceano</span></div>
-                    <div class="color-option-wrapper"><div class="color-dot" style="--dot-color: #1e222a" data-theme="darkslate"></div><span class="color-label">Chumbo</span></div>
-                </div>
-            </div>
-
-            <!-- PREVIEW DE CELULAR - ESTILO DA BARRA DE NAVEGAÇÃO -->
-            <div class="setting-item column">
-                <div class="setting-info" style="width: 100%;">
-                    <label>Estilo da Navegação</label>
-                    <span>Toque no desenho para escolher sua barra inferior.</span>
-                </div>
-                
-                <div class="nav-mockups-container">
-                    <div class="mockup-item active" data-nav="pill">
-                        <div class="mockup-phone">
-                            <div class="m-pill"></div>
-                        </div>
-                        <span class="mockup-label">Pílula</span>
-                    </div>
-
-                    <div class="mockup-item" data-nav="taskbar">
-                        <div class="mockup-phone">
-                            <div class="m-taskbar"></div>
-                        </div>
-                        <span class="mockup-label">Opaca</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <label>Cartões Sólidos</label>
-                    <span>Desliga a transparência dos cartões.</span>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="solid-cards-toggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <label>Desativar Desfoque</label>
-                    <span>Aumenta muito o FPS em celulares fracos.</span>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="blur-toggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item">
-                <div class="setting-info">
-                    <label>Ocultar Pendentes</label>
-                    <span>Mostra apenas quem já atualizou/em distribuição.</span>
-                </div>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="hide-pending-toggle">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="setting-item column" style="border:none; margin-top: 10px;">
-                <button class="action-btn red-btn" id="reset-all-btn">
-                    <i data-lucide="trash-2" style="width:18px;height:18px;margin-right:6px;vertical-align:middle;"></i>
-                    Restaurar tudo (Fábrica)
+            <div id="step-ready" class="flex flex-col items-center justify-center gap-6 hidden my-auto w-full">
+                <h1 id="ready-title" class="text-4xl font-semibold tracking-tight text-white">Tudo pronto!</h1>
+                <p id="ready-desc" class="text-zinc-400 text-center text-sm max-w-xs">O sistema está configurado para testes.</p>
+                <button onclick="finishSetup()" class="mt-6 bg-[#eb0028] hover:bg-red-600 text-white font-medium px-12 py-3.5 rounded-full shadow-lg shadow-red-600/20 transition-all transform active:scale-95">
+                    <span>Finalizar</span>
                 </button>
             </div>
         </div>
+
+        <!-- BARRA DE STATUS TOP -->
+        <div class="w-full px-6 pt-3 pb-2 flex justify-between items-center text-xs font-semibold z-30 drop-shadow-md tracking-wider pointer-events-none">
+            <span id="status-clock">12:00</span>
+            <div class="flex items-center gap-2 opacity-90 text-[11px]">
+                <span>📶</span>
+                <span class="bg-zinc-800/80 px-1.5 py-0.5 rounded-full text-[10px] border border-white/5 font-mono">100%</span>
+            </div>
+        </div>
+
+        <!-- ÁREA DE TRABALHO (HOME) -->
+        <div id="desktop" class="hidden absolute inset-0 pt-12 flex flex-col justify-between z-10">
+            <div class="w-full pt-6 px-6">
+                <h1 id="home-clock" class="text-6xl font-normal tracking-tight text-white drop-shadow-xl">12:00</h1>
+            </div>
+
+            <!-- Grade de Apps -->
+            <div class="grid grid-cols-4 gap-x-2 gap-y-6 items-start justify-items-center w-full px-4 mb-20">
+                <div onclick="openApp('settings', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/settings.png" alt="Config"><span class="app-text">Config.</span></div>
+                <div onclick="openApp('phone', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/phone.png" alt="Fone"><span class="app-text">Telefone</span></div>
+                <div onclick="openApp('chrome', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/chrome.png" alt="Chrome"><span class="app-text">Chrome</span></div>
+                <div onclick="openApp('gallery', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/gallery.png" alt="Galeria"><span class="app-text">Galeria</span></div>
+                <div onclick="openApp('clock', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/clock.png" alt="Relógio"><span class="app-text">Relógio</span></div>
+                <div onclick="openApp('calc', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/calculator.png" alt="Calc"><span class="app-text">Calc</span></div>
+                <div onclick="openApp('files', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/folder-invoices.png" alt="Files"><span class="app-text">Arquivos</span></div>
+                <div onclick="openApp('music', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/itunes.png" alt="Música"><span class="app-text">Música</span></div>
+                <div onclick="openApp('notes', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/edit-property.png" alt="Notas"><span class="app-text">Notas</span></div>
+                <div onclick="openApp('store', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/google-play.png" alt="Store"><span class="app-text">Marly Store</span></div>
+            </div>
+
+            <div class="w-full flex justify-center pb-3 pt-2 pointer-events-none">
+                <div class="w-32 h-1 bg-white/20 rounded-full"></div>
+            </div>
+        </div>
+
+<!-- APP 1: CONFIGURAÇÕES -->
+<!-- APP 1: CONFIGURAÇÕES (10 NOVAS FUNÇÕES ADICIONADAS) -->
+<div id="app-settings" class="oxygen-animate window-closed app-container flex flex-col h-full relative">
+    <div class="app-header"><span>Configurações</span></div>
+    
+    <!-- LISTA PRINCIPAL DAS CONFIGURAÇÕES -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-5 pb-28">
+        <!-- Banner Principal -->
+        <div class="relative w-full h-36 rounded-[28px] overflow-hidden shadow-lg shadow-black/50 flex flex-col justify-end p-6" 
+             style="background: linear-gradient(to top, rgba(0,0,0,0.8) 20%, rgba(0,0,0,0.2)), url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpZp3bvTftJNabTloJGHN6tt1eh3k4F7FeO1qoMgnmPaDvQzoK6mHsTzo&s=10') no-repeat center; background-size: cover;">
+            <div class="relative z-10">
+                <h2 class="text-2xl font-bold tracking-tight text-white">MarlyOS Pro</h2>
+                <p class="text-xs text-zinc-300 mt-0.5">Never Settle • by davizin tech</p>
+            </div>
+        </div>
+
+        <!-- BLCOCO 1: REDES & CONECTIVIDADE (NOVO) -->
+        <div class="bg-zinc-900/60 rounded-[24px] overflow-hidden border border-white/5 divide-y divide-white/5">
+            <!-- 1. Wi-Fi -->
+            <div onclick="openSettingsSubpage('sub-wifi')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Wi-Fi</span><span class="text-xs text-zinc-400 mt-0.5">Marly_5G_Hyper • Conectado</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+            <!-- 2. Bluetooth -->
+            <div onclick="openSettingsSubpage('sub-bluetooth')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Bluetooth</span><span class="text-xs text-zinc-400 mt-0.5">Parear fones e novos dispositivos</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+        </div>
+
+        <!-- BLOCO 2: TELA & PERSONALIZAÇÃO (NOVO) -->
+        <div class="bg-zinc-900/60 rounded-[24px] overflow-hidden border border-white/5 divide-y divide-white/5">
+            <!-- 3. Visor e Brilho -->
+            <div onclick="openSettingsSubpage('sub-display')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Visor e Brilho</span><span class="text-xs text-zinc-400 mt-0.5">Modo Escuro, taxa de atualização e cores</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+            <!-- 4. Papel de Parede -->
+            <div onclick="openSettingsSubpage('sub-wallpaper')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Papel de Parede</span><span class="text-xs text-zinc-400 mt-0.5">Alterar fundo da tela inicial e bloqueio</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+        </div>
+
+        <!-- BLOCO 3: SISTEMA E ASSISTÊNCIA -->
+        <div class="bg-zinc-900/60 rounded-[24px] overflow-hidden border border-white/5 divide-y divide-white/5">
+            <!-- 5. Armazenamento -->
+            <div onclick="openSettingsSubpage('sub-storage')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Armazenamento</span><span class="text-xs text-zinc-400 mt-0.5">Verificar espaço livre e arquivos</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+            <!-- 6. Assistência do Dispositivo (Bateria/RAM) -->
+            <div onclick="openSettingsSubpage('sub-assistance')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Assistência do Dispositivo</span><span class="text-xs text-zinc-400 mt-0.5">Bateria, Memória RAM e Segurança</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+            <!-- 7. Recursos Avançados (Gestos/Desempenho) -->
+            <div onclick="openSettingsSubpage('sub-advanced')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Recursos Avançados</span><span class="text-xs text-zinc-400 mt-0.5">Modo Game, Gestos rápidos e efeitos</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+            <!-- 8. Segurança e Privacidade -->
+            <div onclick="openSettingsSubpage('sub-seguranca')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Segurança e Privacidade</span><span class="text-xs text-zinc-400 mt-0.5">Proteção do dispositivo ativada</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+        </div>
+
+        <!-- BLOCO 4: DETALHES DO DISPOSITIVO -->
+        <div class="bg-zinc-900/60 rounded-[24px] overflow-hidden border border-white/5 divide-y divide-white/5">
+            <!-- 9. Sobre o Telefone -->
+            <div onclick="openSettingsSubpage('sub-about')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Sobre o Telefone</span><span class="text-xs text-zinc-400 mt-0.5">Status, informações legais e do modelo</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+            <!-- 10. Sobre o Desenvolvimento -->
+            <div onclick="openSettingsSubpage('sub-dev')" class="setting-btn flex justify-between items-center p-5 cursor-pointer">
+                <div class="flex flex-col"><span class="text-sm font-medium text-zinc-200">Sobre o Desenvolvimento</span><span class="text-xs text-zinc-400 mt-0.5">Créditos e informações da build</span></div>
+                <span class="text-zinc-500 text-lg">➔</span>
+            </div>
+        </div>
     </div>
 
-    <!-- BARRA DE PESQUISA COM GLOW -->
-    <div class="ios-search-bar" id="ios-search-bar">
-        <i data-lucide="search"></i>
-        <input type="text" id="search-input" placeholder="Buscar dispositivo..." autocomplete="off">
+    <!-- ================= SUB-TELAS COPIE ABAIXO ================= -->
+
+    <!-- SUB-TELA 1: WI-FI -->
+    <div id="sub-wifi" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-wifi')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Wi-Fi</span>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex justify-between items-center bg-zinc-900/40 p-4 rounded-xl">
+                <span class="text-sm text-zinc-200">Ativar Wi-Fi</span>
+                <span class="text-xs text-sky-400 font-bold">LIGADO</span>
+            </div>
+            <h3 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Redes Disponíveis</h3>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm p-2 border-b border-white/5"><span class="text-zinc-200">📶 Marly_5G_Hyper</span><span class="text-xs text-sky-400">Conectado</span></div>
+                <div class="flex justify-between text-sm p-2 border-b border-white/5"><span class="text-zinc-400">📶 Vizinho_2G</span><span class="text-xs text-zinc-500">Salva</span></div>
+            </div>
+        </div>
     </div>
 
-    <div class="apple-pill-nav">
-        <div class="apple-nav-item active" id="tab-inicio">
-            <i data-lucide="home" stroke-width="2.5"></i>
-            <span>Início</span>
+    <!-- SUB-TELA 2: BLUETOOTH -->
+    <div id="sub-bluetooth" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-bluetooth')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Bluetooth</span>
         </div>
-        <div class="apple-nav-item" id="tab-buscar">
-            <i data-lucide="search" stroke-width="2.5"></i>
-            <span>Buscar</span>
-        </div>
-        <div class="apple-nav-item" id="tab-ajustes">
-            <i data-lucide="settings" stroke-width="2.5"></i>
-            <span>Ajustes</span>
+        <div class="p-6 space-y-4">
+            <div class="flex justify-between items-center bg-zinc-900/40 p-4 rounded-xl">
+                <span class="text-sm text-zinc-200">Visível para outros aparelhos</span>
+                <span class="text-xs text-indigo-400 font-bold">ATIVADO</span>
+            </div>
+            <h3 class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Dispositivos Pareados</h3>
+            <div class="text-sm text-zinc-400 italic">🎧 Marly Buds Pro (Desconectado)</div>
         </div>
     </div>
 
+    <!-- SUB-TELA 3: VISOR E BRILHO -->
+    <div id="sub-display" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-display')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Visor</span>
+        </div>
+        <div class="p-6 space-y-5">
+            <div>
+                <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">Brilho da Tela</span>
+                <div class="w-full bg-zinc-800 h-2 rounded-full mt-2 overflow-hidden"><div class="bg-yellow-400 h-full w-[85%]"></div></div>
+            </div>
+            <div class="flex justify-between text-sm border-b border-white/5 pb-2"><span>Taxa de Atualização</span><span class="text-sky-400 font-bold">120 Hz Fluid</span></div>
+            <div class="flex justify-between text-sm"><span>Filtro de Luz Azul</span><span class="text-zinc-500">Desativado</span></div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA 4: PAPEL DE PAREDE -->
+    <div id="sub-wallpaper" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-wallpaper')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Papel de Parede</span>
+        </div>
+        <div class="p-6 space-y-4">
+            <span class="text-xs font-semibold text-zinc-400 uppercase tracking-wider">Temas Ativos</span>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="h-32 bg-zinc-800 rounded-xl border border-sky-400/50 flex flex-col items-center justify-center text-xs text-sky-400 font-medium">Furina UI (Padrão)</div>
+                <div class="h-32 bg-zinc-900 rounded-xl border border-white/5 flex flex-col items-center justify-center text-xs text-zinc-500">Original MarlyOS</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA 5: ARMAZENAMENTO -->
+    <div id="sub-storage" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-storage')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Armazenamento</span>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex justify-between items-center"><h3 class="text-xs font-semibold text-sky-400 uppercase tracking-wider">Armazenamento Interno</h3><span class="text-xs text-zinc-400">45.2 GB / 512 GB usados</span></div>
+            <div class="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden"><div class="bg-sky-500 h-full w-[9%]"></div></div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA 6: ASSISTÊNCIA DO DISPOSITIVO -->
+    <div id="sub-assistance" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-assistance')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Assistência do Dispositivo</span>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2"><span>Memória RAM</span><span class="text-indigo-400">6.4 GB / 16 GB livres</span></div>
+            <div class="flex justify-between items-center text-sm"><span>Bateria</span><span class="font-medium text-green-400">100% • Saudável</span></div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA 7: RECURSOS AVANÇADOS -->
+    <div id="sub-advanced" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-advanced')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Recursos Avançados</span>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex justify-between items-center text-sm border-b border-white/5 pb-2"><span>Marly Hyper Engine (Game Mode)</span><span class="text-green-400 text-xs">Otimizado</span></div>
+            <div class="flex justify-between items-center text-sm"><span>Gestos de Deslizar do Sistema</span><span class="text-zinc-400 text-xs">Ativo</span></div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA 8: SEGURANÇA -->
+    <div id="sub-seguranca" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-seguranca')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Segurança</span>
+        </div>
+        <div class="p-6 flex flex-col items-center justify-center">
+            <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-3xl mb-2">🛡️</div>
+            <p class="text-sm text-zinc-200">Dispositivo Seguro e Criptografado</p>
+        </div>
+    </div>
+
+    <!-- SUB-TELA 9: SOBRE O TELEFONE -->
+    <div id="sub-about" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-about')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Sobre o Telefone</span>
+        </div>
+        <div class="px-5 pt-4">
+            <div class="relative w-full h-28 rounded-[24px] overflow-hidden border border-white/5 flex items-center justify-center shadow-lg shadow-black/50"
+                 style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpZp3bvTftJNabTloJGHN6tt1eh3k4F7FeO1qoMgnmPaDvQzoK6mHsTzo&s=10') no-repeat center; background-size: cover;">
+                <h2 class="text-3xl font-extrabold tracking-widest text-white drop-shadow-md">MarlyOS</h2>
+            </div>
+        </div>
+        <div class="p-6 space-y-3 text-sm overflow-y-auto">
+            <div class="flex justify-between py-1 border-b border-white/5"><span class="text-zinc-400">Nome do dispositivo</span><span class="text-zinc-200">MarlyOS Phone Pro</span></div>
+            <div class="flex justify-between py-1 border-b border-white/5"><span class="text-zinc-400">Versão da UI</span><span class="text-zinc-200">One UI 7</span></div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA 10: SOBRE O DESENVOLVIMENTO -->
+    <div id="sub-dev" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-dev')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Desenvolvimento</span>
+        </div>
+        <div class="p-6 space-y-2">
+            <p class="text-sm text-zinc-300">Criado por <span class="text-white font-semibold">@davizindroidofc</span> no TikTok.</p>
+            <p class="text-sm text-zinc-300">Instagram: <span class="text-white font-semibold">@davizin.techofc</span></p>
+        </div>
+    </div>
+
+    <!-- BARRA DE GESTOS DO APP (FIXA EM PRIMEIRO PLANO NO RODAPÉ) -->
+    <div class="gesture-bar" style="z-index: 100 !important;" onclick="closeCurrentApp()">
+        <div class="gesture-line"></div>
+    </div>
+</div>
+
+    <!-- SUB-TELA: ARMAZENAMENTO -->
+    <div id="sub-storage" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-storage')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Armazenamento</span>
+        </div>
+        <div class="p-6 space-y-4">
+            <div class="flex justify-between items-center"><h3 class="text-xs font-semibold text-sky-400 uppercase tracking-wider">Armazenamento Interno</h3><span class="text-xs text-zinc-400">45.2 GB / 512 GB usados</span></div>
+            <div class="w-full bg-zinc-800 h-2.5 rounded-full overflow-hidden"><div class="bg-sky-500 h-full w-[9%]"></div></div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA: ASSISTÊNCIA DO DISPOSITIVO -->
+    <div id="sub-assistance" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-assistance')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Assistência do Dispositivo</span>
+        </div>
+        <div class="p-6 space-y-5">
+            <div class="flex justify-between items-center text-sm"><span class="text-zinc-300">Bateria</span><span class="font-medium text-green-400">100% • Saudável</span></div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA: SOBRE O TELEFONE -->
+    <div id="sub-about" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-about')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Sobre o Telefone</span>
+        </div>
+        <div class="px-5 pt-4">
+            <div class="relative w-full h-28 rounded-[24px] overflow-hidden border border-white/5 flex items-center justify-center shadow-lg shadow-black/50"
+                 style="background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpZp3bvTftJNabTloJGHN6tt1eh3k4F7FeO1qoMgnmPaDvQzoK6mHsTzo&s=10') no-repeat center; background-size: cover;">
+                <h2 class="text-3xl font-extrabold tracking-widest text-white drop-shadow-md">MarlyOS</h2>
+            </div>
+        </div>
+        <div class="p-6 space-y-3 text-sm overflow-y-auto">
+            <div class="flex justify-between py-1 border-b border-white/5"><span class="text-zinc-400">Nome do dispositivo</span><span class="text-zinc-200">MarlyOS Phone Pro</span></div>
+            <div class="flex justify-between py-1 border-b border-white/5"><span class="text-zinc-400">Versão da UI</span><span class="text-zinc-200"> v1.0</span></div>
+            <div class="flex justify-between py-1 border-b border-white/5"><span class="text-zinc-400">patch de segurança</span><span class="text-zinc-200"> junho 2026</span></div>
+        </div>
+    </div>
+
+    <!-- SUB-TELA: SOBRE O DESENVOLVIMENTO -->
+    <div id="sub-dev" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-dev')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Desenvolvimento</span>
+        </div>
+        <div class="p-6 space-y-4">
+            <p class="text-sm text-zinc-300">Criado por <span class="text-white font-semibold">@davizindroidofc</span> no TikTok.</p>
+            <p class="text-sm text-zinc-300">Instagram: <span class="text-white font-semibold">@davizin.techofc</span></p>
+        </div>
+    </div>
+
+    <!-- SUB-TELA: SEGURANÇA -->
+    <div id="sub-seguranca" class="settings-subpage subpage-hidden pt-12">
+        <div class="flex items-center gap-4 px-5 py-4 border-b border-white/5 bg-zinc-900/40">
+            <button onclick="closeSettingsSubpage('sub-seguranca')" class="text-sky-400 text-sm font-medium">❮ Voltar</button>
+            <span class="font-semibold text-zinc-200">Segurança</span>
+        </div>
+        <div class="p-6 flex flex-col items-center justify-center">
+            <div class="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center text-3xl mb-2">🛡️</div>
+            <p class="text-sm text-zinc-200">Dispositivo Protegido</p>
+        </div>
+    </div>
+
+    <!-- BARRA DE GESTOS DO APP (FIXA EM PRIMEIRO PLANO NO RODAPÉ) -->
+    <div class="gesture-bar" style="z-index: 100 !important;" onclick="closeCurrentApp()">
+        <div class="gesture-line"></div>
+    </div>
+</div>
+
+
+
+        <!-- APP 2: TELEFONE -->
+        <div id="app-phone" class="oxygen-animate window-closed app-container">
+            <div class="app-header"><span>Telefone</span></div>
+            <div class="flex-1 flex flex-col justify-end p-6 pb-24 space-y-6 bg-zinc-950">
+                <div id="phone-display" class="text-right text-4xl font-light tracking-widest px-4 text-zinc-200 h-12 truncate"></div>
+                <div class="grid grid-cols-3 gap-4 justify-items-center max-w-xs mx-auto w-full">
+                    <button onclick="pressDial('1')" class="dial-btn">1</button><button onclick="pressDial('2')" class="dial-btn">2</button><button onclick="pressDial('3')" class="dial-btn">3</button>
+                    <button onclick="pressDial('4')" class="dial-btn">4</button><button onclick="pressDial('5')" class="dial-btn">5</button><button onclick="pressDial('6')" class="dial-btn">6</button>
+                </div>
+                <div class="flex justify-center gap-6">
+                    <button onclick="clearDial()" class="w-14 h-14 bg-zinc-800 rounded-full flex items-center justify-center text-lg">⌫</button>
+                </div>
+            </div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+        <!-- APP 3: CHROME -->
+        <div id="app-chrome" class="oxygen-animate window-closed app-container">
+            <div class="app-header">
+                <div class="flex items-center gap-2 bg-zinc-900 w-full px-3 py-1.5 rounded-xl border border-white/5">
+                    <input id="chrome-url" type="text" value="https://www.bing.com" class="bg-transparent text-xs text-zinc-200 w-full outline-none" onkeydown="if(event.key === 'Enter') loadWebview()">
+                </div>
+            </div>
+            <div class="flex-1 bg-white pb-16"><iframe id="chrome-frame" src="https://www.bing.com" class="w-full h-full border-none"></iframe></div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+        <!-- APP 4: GALERIA -->
+        <div id="app-gallery" class="oxygen-animate window-closed app-container">
+            <div class="app-header"><span>Galeria</span></div>
+            <div class="flex-1 overflow-y-auto p-4 grid grid-cols-3 gap-2 pb-24 bg-black">
+                <div class="aspect-square bg-zinc-800 rounded-lg overflow-hidden"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200" class="w-full h-full object-cover"></div>
+            </div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+        <!-- APP 5: RELÓGIO -->
+        <div id="app-clock" class="oxygen-animate window-closed app-container">
+            <div class="app-header"><span>Cronômetro</span></div>
+            <div class="flex-1 flex flex-col items-center justify-center p-6 bg-zinc-950 pb-24 space-y-8">
+                <div id="stopwatch-display" class="text-5xl font-mono text-zinc-100">00:00.00</div>
+                <div class="flex gap-4">
+                    <button onclick="toggleStopwatch()" id="sw-btn" class="px-6 py-2.5 bg-red-600 rounded-full font-medium text-sm">Iniciar</button>
+                </div>
+            </div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+        <!-- APP 6: CALCULADORA -->
+        <div id="app-calc" class="oxygen-animate window-closed app-container">
+            <div class="app-header"><span>Calculadora</span></div>
+            <div class="flex-1 flex flex-col justify-end p-5 bg-black pb-24 space-y-4">
+                <div id="calc-screen" class="text-right text-4xl font-light text-zinc-100 h-12">0</div>
+                <div class="grid grid-cols-4 gap-3">
+                    <button onclick="calcClear()" class="calc-btn text-red-500">C</button>
+                    <button onclick="calcNum('7')" class="calc-btn">7</button><button onclick="calcNum('8')" class="calc-btn">8</button>
+                </div>
+            </div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+        <!-- APP 7: ARQUIVOS -->
+        <div id="app-files" class="oxygen-animate window-closed app-container">
+            <div class="app-header"><span>Arquivos</span></div>
+            <div class="flex-1 p-5 bg-zinc-950"><p class="text-xs text-zinc-400">Nenhum download ativo.</p></div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+        <!-- APP 8: MÚSICA -->
+        <div id="app-music" class="oxygen-animate window-closed app-container">
+            <div class="app-header"><span>Música</span></div>
+            <div class="flex-1 flex flex-col items-center justify-center p-6 bg-zinc-950 pb-24 space-y-4">
+                <div class="w-40 h-40 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center text-4xl">🎵</div>
+                <button onclick="alert('Tocando...')" class="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white">▶</button>
+            </div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+        <!-- APP 9: NOTAS -->
+        <div id="app-notes" class="oxygen-animate window-closed app-container">
+            <div class="app-header"><span>Notas</span></div>
+            <div class="flex-1 flex flex-col p-4 bg-zinc-950 pb-24 space-y-3">
+                <textarea class="flex-1 bg-zinc-900 border border-white/5 rounded-2xl p-4 text-sm text-zinc-200 outline-none" placeholder="Escreva aqui..."></textarea>
+            </div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+        <!-- APP 10: MARLY STORE -->
+        <div id="app-store" class="oxygen-animate window-closed app-container">
+            <div class="app-header"><span>Marly Store</span></div>
+            <div class="flex-1 p-4 bg-zinc-950"><p class="text-xs text-zinc-400">Todos os aplicativos updated.</p></div>
+            <div class="gesture-bar" onclick="closeCurrentApp()"><div class="gesture-line"></div></div>
+        </div>
+
+    </div>
+
+    <!-- Script Unificado com Gerenciador de Sub-telas -->
     <script>
-        lucide.createIcons();
+        let activeApp = null;
 
-        const installPrompt = document.getElementById('install-prompt');
-        const btnAdd = document.getElementById('install-btn-add');
-        const btnClose = document.getElementById('install-btn-close');
-        const resetAllBtn = document.getElementById('reset-all-btn');
-        const colorDots = document.querySelectorAll('.color-dot');
-        const mockupItems = document.querySelectorAll('.mockup-item');
-        
-        const blurToggle = document.getElementById('blur-toggle');
-        const solidCardsToggle = document.getElementById('solid-cards-toggle');
-        const hidePendingToggle = document.getElementById('hide-pending-toggle');
-        
-        const tabInicio = document.getElementById('tab-inicio');
-        const tabBuscar = document.getElementById('tab-buscar');
-        const tabAjustes = document.getElementById('tab-ajustes');
-        const mainContent = document.getElementById('main-content');
-        const ajustesView = document.getElementById('ajustes-view');
-        
-        const searchBar = document.getElementById('ios-search-bar');
-        const searchInput = document.getElementById('search-input');
-        const wrappers = document.querySelectorAll('.card-wrapper');
-        const noResults = document.getElementById('no-results');
-        
-        const filterBtn = document.getElementById('filter-btn');
-        const filterPopup = document.getElementById('filter-popup');
-        const popupItems = document.querySelectorAll('.popup-item');
-        const filterLabel = document.getElementById('filter-label');
-
-        // TEMAS CONFIG
-        const themesConfig = {
-            default:    { bg: 'linear-gradient(135deg, #0f0f11 0%, #1a1a24 100%)', c1: '#0f0f11' },
-            oled:       { bg: 'linear-gradient(135deg, #000000 0%, #000000 100%)', c1: '#000000' }, 
-            midnight:   { bg: 'linear-gradient(135deg, #020617 0%, #0f172a 100%)', c1: '#020617' },
-            darkblue:   { bg: 'linear-gradient(135deg, #0b132b 0%, #1c2541 100%)', c1: '#0b132b' },
-            darkgreen:  { bg: 'linear-gradient(135deg, #061a14 0%, #0f3d2e 100%)', c1: '#061a14' },
-            darkpurple: { bg: 'linear-gradient(135deg, #1a0b2e 0%, #32174d 100%)', c1: '#1a0b2e' },
-            darkred:    { bg: 'linear-gradient(135deg, #2b0c0c 0%, #4a1515 100%)', c1: '#2b0c0c' },
-            darkpink:   { bg: 'linear-gradient(135deg, #4a1528 0%, #6b1d3a 100%)', c1: '#4a1528' },
-            darkgold:   { bg: 'linear-gradient(135deg, #2b200b 0%, #4a3810 100%)', c1: '#2b200b' },
-            darkorange: { bg: 'linear-gradient(135deg, #331400 0%, #5c2400 100%)', c1: '#331400' },
-            darkteal:   { bg: 'linear-gradient(135deg, #062329 0%, #10434f 100%)', c1: '#062329' },
-            darkslate:  { bg: 'linear-gradient(135deg, #1e222a 0%, #2d333e 100%)', c1: '#1e222a' }
-        };
-
-        // CARREGA PREFERÊNCIAS SALVAS
-        let currentSavedTheme = localStorage.getItem('siteTheme') || 'default';
-        let currentNavStyle = localStorage.getItem('siteNavStyle') || 'pill';
-        let isBlurDisabled = localStorage.getItem('siteBlur') === 'true';
-        let isSolidCards = localStorage.getItem('siteSolidCards') === 'true'; 
-        let isHidePending = localStorage.getItem('siteHidePending') === 'true';
-        let activeFilter = 'todos';
-        let activeBgLayer = 1;
-
-        // NOTIFICAÇÃO INSTALAR
-        if (!localStorage.getItem('hideInstallPrompt') && installPrompt) {
-            setTimeout(() => { installPrompt.classList.add('show'); }, 3000);
+        // Funções para controle de sub-páginas das Configurações
+        function openSettingsSubpage(subpageId) {
+            const sub = document.getElementById(subpageId);
+            if (sub) {
+                sub.classList.remove('subpage-hidden');
+                sub.classList.add('subpage-visible');
+            }
         }
-        if(btnClose) btnClose.addEventListener('click', () => { installPrompt.classList.remove('show'); localStorage.setItem('hideInstallPrompt', 'true'); });
-        if(btnAdd) btnAdd.addEventListener('click', () => { alert('Para adicionar, clique nos 3 pontinhos do navegador e selecione "Adicionar à Tela Inicial".'); installPrompt.classList.remove('show'); localStorage.setItem('hideInstallPrompt', 'true'); });
 
-        // TEMA COM CROSSFADE LENTO E CORREÇÃO DO EFEITO ELÁSTICO
-        function applyTheme(themeName, save = false) {
-            const t = themesConfig[themeName] || themesConfig.default;
+        function closeSettingsSubpage(subpageId) {
+            const sub = document.getElementById(subpageId);
+            if (sub) {
+                sub.classList.remove('subpage-visible');
+                sub.classList.add('subpage-hidden');
+            }
+        }
+
+        function nextStep(lang) {
+            document.getElementById('step-language').classList.add('hidden');
+            document.getElementById('step-ready').classList.remove('hidden');
+        }
+
+        function finishSetup() {
+            const setup = document.getElementById('setup-screen');
+            setup.classList.add('opacity-0');
+            setTimeout(() => {
+                setup.style.setProperty('display', 'none', 'important'); 
+                document.getElementById('desktop').classList.remove('hidden');
+                
+                setInterval(() => {
+                    const timeStr = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    document.getElementById('status-clock').innerText = timeStr;
+                    document.getElementById('home-clock').innerText = timeStr;
+                }, 1000);
+            }, 500);
+        }
+
+        function openApp(appId, e) {
+            if(e) e.stopPropagation();
+
+            const appEl = document.getElementById(`app-${appId}`);
+            if (!appEl) return;
+
+            const clickX = (e ? e.clientX : window.event.clientX) + "px";
+            const clickY = (e ? e.clientY : window.event.clientY) + "px";
             
-            document.documentElement.style.backgroundColor = t.c1;
-            document.body.style.backgroundColor = t.c1;
+            appEl.style.setProperty('--click-x', clickX);
+            appEl.style.setProperty('--click-y', clickY);
+
+            activeApp = appId;
+            void appEl.offsetWidth; 
             
-            const layer1 = document.getElementById('bg-layer-1');
-            const layer2 = document.getElementById('bg-layer-2');
-            
-            if (activeBgLayer === 1) {
-                layer2.style.background = t.bg;
-                layer2.style.opacity = '1';
-                layer1.style.opacity = '0';
-                activeBgLayer = 2;
+            appEl.classList.remove('window-closed');
+            appEl.classList.add('window-open');
+        }
+
+        function closeCurrentApp() {
+            if (!activeApp) return;
+
+            // Fecha qualquer subpage aberta antes de fechar o app geral
+            document.querySelectorAll('.settings-subpage').forEach(sub => {
+                sub.classList.remove('subpage-visible');
+                sub.classList.add('subpage-hidden');
+            });
+
+            const appEl = document.getElementById(`app-${activeApp}`);
+            if (appEl) {
+                appEl.classList.remove('window-open');
+                appEl.classList.add('window-closed');
+            }
+            activeApp = null;
+        }
+
+        function pressDial(num) { document.getElementById('phone-display').innerText += num; }
+        function clearDial() { 
+            const display = document.getElementById('phone-display');
+            display.innerText = display.innerText.slice(0, -1);
+        }
+        function loadWebview() {
+            let url = document.getElementById('chrome-url').value;
+            if (!url.startsWith('http')) url = 'https://' + url;
+            document.getElementById('chrome-frame').src = url;
+        }
+        let stopwatchInterval; let stopwatchTime = 0;
+        function toggleStopwatch() {
+            const btn = document.getElementById('sw-btn');
+            if (stopwatchInterval) {
+                clearInterval(stopwatchInterval); stopwatchInterval = null; btn.innerText = "Iniciar";
             } else {
-                layer1.style.background = t.bg;
-                layer1.style.opacity = '1';
-                layer2.style.opacity = '0';
-                activeBgLayer = 1;
-            }
-            
-            if (save) {
-                colorDots.forEach(d => d.classList.remove('active'));
-                const activeDot = document.querySelector(`.color-dot[data-theme="${themeName}"]`);
-                if (activeDot) activeDot.classList.add('active');
-                currentSavedTheme = themeName;
-                localStorage.setItem('siteTheme', themeName);
+                btn.innerText = "Pausar";
+                stopwatchInterval = setInterval(() => {
+                    stopwatchTime += 10;
+                    const ms = String(Math.floor((stopwatchTime % 1000) / 10)).padStart(2, '0');
+                    const sec = String(Math.floor((stopwatchTime / 1000) % 60)).padStart(2, '0');
+                    document.getElementById('stopwatch-display').innerText = `${sec}.${ms}`;
+                }, 10);
             }
         }
-        colorDots.forEach(dot => { dot.addEventListener('click', () => applyTheme(dot.getAttribute('data-theme'), true)); });
-
-        // SISTEMA DA BARRA DE NAVEGAÇÃO
-        function applyNavStyle(style, save = false) {
-            if(style === 'taskbar') {
-                document.body.classList.add('nav-taskbar');
-            } else {
-                document.body.classList.remove('nav-taskbar');
-            }
-
-            mockupItems.forEach(item => {
-                if(item.getAttribute('data-nav') === style) item.classList.add('active');
-                else item.classList.remove('active');
-            });
-
-            if(save) {
-                currentNavStyle = style;
-                localStorage.setItem('siteNavStyle', style);
-            }
-        }
-        mockupItems.forEach(item => { item.addEventListener('click', () => applyNavStyle(item.getAttribute('data-nav'), true)); });
-
-        // RESET DE FÁBRICA
-        if(resetAllBtn) {
-            resetAllBtn.addEventListener('click', () => {
-                if(confirm('Tem certeza que deseja restaurar tudo? Favoritos, Temas e Configurações serão apagados.')){
-                    localStorage.clear(); location.reload(); 
-                }
-            });
-        }
-
-        // TOGGLES GERAIS
-        function toggleClassBody(state, className, storageKey, toggleElement) {
-            if (state) { document.body.classList.add(className); } else { document.body.classList.remove(className); }
-            if(toggleElement) toggleElement.checked = state; localStorage.setItem(storageKey, state);
-        }
-
-        if(blurToggle) blurToggle.addEventListener('change', (e) => toggleClassBody(e.target.checked, 'no-blur', 'siteBlur', blurToggle));
-        if(solidCardsToggle) solidCardsToggle.addEventListener('change', (e) => toggleClassBody(e.target.checked, 'solid-cards', 'siteSolidCards', solidCardsToggle));
-        if(hidePendingToggle) hidePendingToggle.addEventListener('change', (e) => { localStorage.setItem('siteHidePending', e.target.checked); applyFilterAndSearch(); });
-
-        // SISTEMA DE FAVORITOS
-        function renderFavorites() {
-            const favList = document.getElementById('favorites-list');
-            const favCard = document.getElementById('favorites-card');
-            if(!favList || !favCard) return;
-
-            let favorites = JSON.parse(localStorage.getItem('deviceFavorites')) || [];
-            favList.innerHTML = ''; 
-
-            if (favorites.length === 0) {
-                favCard.style.display = 'none'; favCard.classList.remove('animate-fav-card');
-            } else {
-                if(favCard.style.display === 'none') {
-                    favCard.style.display = 'flex'; void favCard.offsetWidth; favCard.classList.add('animate-fav-card');
-                }
-                const allOriginalDevices = Array.from(document.querySelectorAll('.card-wrapper:not(#favorites-card) .device'));
-                favorites.forEach(favName => {
-                    const original = allOriginalDevices.find(el => el.querySelector('.name').innerText.trim() === favName);
-                    if (original) { const clone = original.cloneNode(true); favList.appendChild(clone); }
-                });
-            }
-        }
-
-        function updateHeartIcons() {
-            let favorites = JSON.parse(localStorage.getItem('deviceFavorites')) || [];
-            document.querySelectorAll('.device').forEach(deviceEl => {
-                const nameNode = deviceEl.querySelector('.name');
-                if(!nameNode) return;
-                const name = nameNode.innerText.trim();
-                const favBtn = deviceEl.querySelector('.fav-btn');
-                if(favBtn) { if (favorites.includes(name)) favBtn.classList.add('active'); else favBtn.classList.remove('active'); }
-            });
-        }
-
-        function toggleFavorite(deviceName) {
-            let favorites = JSON.parse(localStorage.getItem('deviceFavorites')) || [];
-            if (favorites.includes(deviceName)) favorites = favorites.filter(n => n !== deviceName); 
-            else favorites.push(deviceName);
-            localStorage.setItem('deviceFavorites', JSON.stringify(favorites));
-            renderFavorites(); updateHeartIcons(); applyFilterAndSearch();
-        }
-
-        // GLOW NOS CARDS E CLIQUE NO CORAÇÃO
-        function removeAllGlows() { wrappers.forEach(c => c.classList.remove('active-glow')); }
-        const deviceContainer = document.getElementById('device-container');
-        if(deviceContainer) {
-            deviceContainer.addEventListener('click', (e) => {
-                const favBtn = e.target.closest('.fav-btn');
-                if (favBtn) {
-                    e.stopPropagation(); 
-                    const deviceRow = favBtn.closest('.device');
-                    toggleFavorite(deviceRow.querySelector('.name').innerText.trim()); return;
-                }
-                const card = e.target.closest('.card-wrapper');
-                if (card) {
-                    e.stopPropagation(); const wasActive = card.classList.contains('active-glow');
-                    removeAllGlows(); if (!wasActive) card.classList.add('active-glow');
-                }
-            });
-        }
-
-        // FILTRO E BUSCA (SPOTLIGHT MODE)
-        function applyFilterAndSearch() {
-            if(!searchInput) return;
-            const term = searchInput.value.toLowerCase().trim();
-            const hidePending = hidePendingToggle ? hidePendingToggle.checked : false;
-            let globalMatch = false;
-
-            wrappers.forEach(wrapper => {
-                const category = wrapper.querySelector('.category');
-                if(!category) return;
-                const devices = category.querySelectorAll('.device');
-                let hasVisibleDevice = false;
-
-                devices.forEach(device => {
-                    const nameNode = device.querySelector('.name');
-                    if(!nameNode) return;
-                    const name = nameNode.innerText.toLowerCase();
-                    const status = device.getAttribute('data-status');
-                    
-                    if (hidePending && status === 'nao-recebeu') { device.style.display = 'none'; return; }
-                    
-                    if (name.includes(term) && (activeFilter === 'todos' || status === activeFilter)) {
-                        device.style.display = 'flex'; hasVisibleDevice = true; globalMatch = true;
-                    } else { device.style.display = 'none'; }
-                });
-
-                if(hasVisibleDevice) {
-                    wrapper.style.display = 'flex';
-                    wrapper.classList.add('match');
-                } else {
-                    wrapper.style.display = 'none';
-                    wrapper.classList.remove('match');
-                }
-            });
-            if(noResults) noResults.style.display = (!globalMatch) ? 'block' : 'none';
-        }
-
-        function resetSearch() {
-            if(searchInput) searchInput.value = ''; activeFilter = 'todos';
-            popupItems.forEach(i => i.classList.remove('active'));
-            const todosBtn = document.querySelector('[data-value="todos"]');
-            if(todosBtn) todosBtn.classList.add('active');
-            if(filterLabel) filterLabel.innerText = 'Filtro'; applyFilterAndSearch();
-        }
-
-        function closeFilterMenu() { if(filterPopup) filterPopup.classList.remove('show'); if(filterBtn) filterBtn.classList.remove('menu-open'); }
-        if(searchInput) searchInput.addEventListener('input', applyFilterAndSearch);
-        if(filterBtn) filterBtn.addEventListener('click', (e) => { e.stopPropagation(); if (filterPopup.classList.contains('show')) closeFilterMenu(); else { filterPopup.classList.add('show'); filterBtn.classList.add('menu-open'); }});
-
-        popupItems.forEach(item => {
-            item.addEventListener('click', (e) => {
-                e.stopPropagation(); popupItems.forEach(i => i.classList.remove('active')); item.classList.add('active');
-                activeFilter = item.getAttribute('data-value'); if(filterLabel) filterLabel.innerText = item.innerText === 'Todos' ? 'Filtro' : item.innerText;
-                applyFilterAndSearch(); closeFilterMenu();
-            });
-        });
-
-        // NAVEGAÇÃO ENTRE ABAS
-        if(tabInicio) tabInicio.addEventListener('click', () => { 
-            document.querySelectorAll('.apple-nav-item').forEach(el => el.classList.remove('active')); tabInicio.classList.add('active'); 
-            if(mainContent) mainContent.style.display = 'block'; 
-            if(ajustesView) ajustesView.style.display = 'none'; 
-            if(searchBar) searchBar.classList.remove('active'); 
-            document.body.classList.remove('search-mode'); 
-            resetSearch(); window.scrollTo({ top: 0, behavior: 'smooth' }); 
-        });
-
-        // Ativa o Modo Spotlight com scroll instantâneo pra não travar a visualização
-        if(tabBuscar) tabBuscar.addEventListener('click', () => { 
-            document.querySelectorAll('.apple-nav-item').forEach(el => el.classList.remove('active')); tabBuscar.classList.add('active'); 
-            if(mainContent) mainContent.style.display = 'block'; 
-            if(ajustesView) ajustesView.style.display = 'none'; 
-            if(searchBar) searchBar.classList.add('active'); 
-            document.body.classList.add('search-mode'); 
-            window.scrollTo({ top: 0, behavior: 'instant' }); 
-            setTimeout(() => { if(searchInput) searchInput.focus(); }, 300); 
-        });
-
-        if(tabAjustes) tabAjustes.addEventListener('click', () => { 
-            document.querySelectorAll('.apple-nav-item').forEach(el => el.classList.remove('active')); tabAjustes.classList.add('active'); 
-            if(mainContent) mainContent.style.display = 'none'; 
-            if(searchBar) searchBar.classList.remove('active'); 
-            document.body.classList.remove('search-mode');
-            resetSearch(); if(ajustesView) ajustesView.style.display = 'block'; 
-        });
-
-        window.addEventListener('scroll', () => { removeAllGlows(); closeFilterMenu(); }, { passive: true });
-        document.addEventListener('click', (e) => { if(!e.target.closest('.card-wrapper') && !e.target.closest('.apple-pill-nav')) removeAllGlows(); if(!e.target.closest('.filter-wrapper')) closeFilterMenu(); });
-
-        // INICIALIZAÇÃO GERAL
-        applyTheme(currentSavedTheme, true);
-        applyNavStyle(currentNavStyle, false);
-        toggleClassBody(isBlurDisabled, 'no-blur', 'siteBlur', blurToggle);
-        toggleClassBody(isSolidCards, 'solid-cards', 'siteSolidCards', solidCardsToggle);
-        if(hidePendingToggle) hidePendingToggle.checked = isHidePending;
-        
-        renderFavorites();
-        updateHeartIcons();
+        let calcInput = "";
+        function calcNum(val) { calcInput += val; document.getElementById('calc-screen').innerText = calcInput; }
+        function calcClear() { calcInput = ""; document.getElementById('calc-screen').innerText = "0"; }
     </script>
 </body>
 </html>
