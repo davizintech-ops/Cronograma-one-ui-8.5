@@ -225,10 +225,11 @@
                 <div onclick="openApp('store', event)" class="app-icon-wrapper"><img src="https://img.icons8.com/fluency/96/google-play.png" alt="Store"><span class="app-text">Marly Store</span></div>
             </div>
 
-            <div class="w-full flex justify-center pb-3 pt-2 pointer-events-none">
-                <div class="w-32 h-1 bg-white/20 rounded-full"></div>
-            </div>
-        </div>
+<!-- BARRA DE GESTOS DA TELA INICIAL (FIXADA NA BASE) -->
+<div class="fixed bottom-0 left-0 right-0 h-5 flex items-center justify-center bg-transparent pointer-events-none" style="z-index: 9999;">
+    <div class="w-36 h-1 bg-white rounded-full opacity-80 pointer-events-auto shadow-sm" onclick="closeCurrentApp()"></div>
+</div>
+
 
 <!-- APP 1: CONFIGURAÇÕES -->
 <!-- APP 1: CONFIGURAÇÕES (10 NOVAS FUNÇÕES ADICIONADAS) -->
